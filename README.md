@@ -1,0 +1,1 @@
+修改了 site-packages/skvideo/io/ffmpeg.py 中的 np.float np.int来使其适应高于 1.20 版本的 numpy
