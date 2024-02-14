@@ -3,11 +3,11 @@ import sys
 from time import sleep
 import gradio as gr
 from utils.utils import Logger
-import audio.whisper as sr
+import warp.whisper_warp as whisper_warp
 import utils.utils as utils
 from utils.process_manager import ProcessManager as PM
 
-model_list = ["base", "medium", "large"]
+model_list = ["tiny", "base", "small", "medium", "large"]
 format_list = ["txt", "vtt", "srt", "json", "tsv", "all"]
 language_list = ["Chinese", "English"]
 task_list = ["transcribe", "translate"]
@@ -46,17 +46,16 @@ def on_convert_click(file_upload, model, language, output_format):
     utils.save_gradio_file(file_upload, exec_logs_dir, "input." + input_format)
     input_path = os.path.join(exec_logs_dir, "input." + input_format)
     output_dir = os.path.join(exec_logs_dir)
-    command = sr.whisper_command_warp(
-        input_path, output_dir, language, model, output_format
+    print("Starting process")
+    whisper_warp.exec_whisper_command(
+        file_path=input_path,
+        output_dir=output_dir,
+        model_type="medium",
+        language="Chinese",
+        format=output_format,
     )
-    process_hash = pm.exec(command, task_token)
-    p = pm.get_process_by_hash(process_hash)
-    pm.print_process_stdout_and_wait(p)
-    pm.delete_process_by_hash(process_hash)
-    if p.poll() != 0:
-        gr.Error("Conversion Stop.")
-        return gr.Textbox("Conversion Stop."), gr.File(visible=False)
-    output_path = os.path.join(output_dir, f"input.{output_format}")
+    print("Finished process")
+    output_path = os.path.join(output_dir, f"output.{output_format}")
     output_text = utils.read_text_file(output_path)
     return output_text, gr.File(output_path, visible=True)
 
@@ -82,7 +81,7 @@ def ui():
             with gr.Row():
                 with gr.Column():
                     model = gr.Dropdown(
-                        label="Model", choices=model_list, value=model_list[0]
+                        label="Model", choices=model_list, value=model_list[1]
                     )
                     language = gr.Dropdown(
                         label="Language", choices=language_list, value=language_list[0]

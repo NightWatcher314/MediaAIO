@@ -7,3 +7,7 @@ base_logs_dir = os.path.join(
 base_models_dir = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "models"
 )
+
+base_work_dir = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src"
+)

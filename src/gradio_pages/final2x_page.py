@@ -3,7 +3,7 @@ import sys
 from time import sleep
 import gradio as gr
 from utils.utils import Logger
-import image.final2x.final2x as final2x
+import image.final2x_warp.final2x_warp as final2x_warp
 import utils.utils as utils
 from utils.process_manager import ProcessManager as PM
 

@@ -2,9 +2,6 @@ import datetime
 import os
 import sys
 import shutil
-
-script_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(script_path)
 from config import base_logs_dir  # noqa: E402
 
 
@@ -42,7 +39,7 @@ class Logger:
         return False
 
 
-def generate_logs_dir(task_type: str, task_name: str, token=None):
+def _generate_logs_dir(task_type: str, task_name: str, token=None):
     if token is None:
         logs_dir = os.path.join(base_logs_dir, task_type, task_name)
     else:
@@ -59,14 +56,14 @@ def generate_logs_dir(task_type: str, task_name: str, token=None):
 def get_logs_dir(task_type: str, task_name: str):
     logs_dir = os.path.join(base_logs_dir, task_type, task_name)
     if not os.path.exists(logs_dir):
-        generate_logs_dir(task_type, task_name)
+        _generate_logs_dir(task_type, task_name)
     return logs_dir
 
 
 def get_exec_logs_dir(task_type: str, task_name: str, token):
     logs_dir = os.path.join(base_logs_dir, task_type, task_name, token)
     if not os.path.exists(logs_dir):
-        generate_logs_dir(task_type, task_name, token)
+        _generate_logs_dir(task_type, task_name, token)
     return logs_dir
 
 
