@@ -3,7 +3,7 @@ import torch
 import subprocess
 from config import base_models_dir, base_work_dir
 
-model_list = [
+reg_model_list = [
     "realesr-animevideov3",
     "RealESRGAN_x4plus_anime_6B",
     "RealESRGAN_x4plus",

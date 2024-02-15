@@ -3,9 +3,13 @@ import sys
 from time import sleep
 import gradio as gr
 from utils.utils import Logger
+from config import base_work_dir
 import warp.whisper_warp as whisper_warp
 import utils.utils as utils
 from utils.process_manager import ProcessManager as PM
+
+os.chdir(base_work_dir)
+print(os.getcwd())
 
 model_list = ["tiny", "base", "small", "medium", "large"]
 format_list = ["txt", "vtt", "srt", "json", "tsv", "all"]

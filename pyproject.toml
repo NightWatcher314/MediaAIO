@@ -24,6 +24,11 @@ flash-attention = "^1.0.0"
 auto-gptq = "^0.6.0"
 optimum = "^1.16.2"
 torch = "2.1.1"
+librosa = "^0.10.1"
+audio-separator = {extras = ["gpu"], version = "^0.14.4"}
+timm = "^0.9.12"
+realesrgan = "^0.3.0"
+funasr = "^1.0.5"
 
 
 [[tool.poetry.source]]

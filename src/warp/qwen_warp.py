@@ -15,7 +15,7 @@ import urllib
 import whisper
 from config import base_models_dir
 
-model_list = ["Qwen1.5-7B-Chat-GPTQ-Int8"]
+qwen_model_list = ["Qwen1.5-7B-Chat-GPTQ-Int8"]
 
 qwen_models_dir = os.path.join(base_models_dir, "Qwen")
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -83,16 +83,21 @@ def _check_and_download_model(model_type):
         "Qwen/Qwen1.5-7B-Chat-GPTQ-Int8", device_map="auto"
     )
     tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen1.5-7B-Chat-GPTQ-Int8")
-    # download_path = os.path.join(
-    #     f"{os.path.expanduser('~')}/.cache/huggingface/hub/models--openai--whisper-{model_type}"
-    # )
-    # shutil.move(os.path.join(download_path), model_path)
-    # for dir in os.listdir(model_path):
-    #     if dir == "snapshots":
-    #         for ddir in os.listdir(os.path.join(model_path, dir)):
-    #             shutil.move(
-    #                 os.path.join(model_path, dir, ddir),
-    #                 os.path.join(model_path, dir, "model"),
-    #             )
-    # del model, processor
-    # return os.path.join(model_path, "snapshots", "model")
+    prompt = "Give me a long introduction to large language model."
+    messages = [
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": prompt},
+    ]
+    text = tokenizer.apply_chat_template(
+        messages, tokenize=False, add_generation_prompt=True
+    )
+    model_inputs = tokenizer([text], return_tensors="pt").to(device)
+
+    generated_ids = model.generate(model_inputs.input_ids, max_new_tokens=512)
+    generated_ids = [
+        output_ids[len(input_ids) :]
+        for input_ids, output_ids in zip(model_inputs.input_ids, generated_ids)
+    ]
+
+    response = tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
+    print(response)
