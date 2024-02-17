@@ -4,6 +4,12 @@ import subprocess
 from config import base_models_dir, base_work_dir
 from audio_separator.separator import Separator
 import asyncio
+import sys
+import utils.utils as utils
+import inspect
+import pprint
+
+print(sys.stdout)
 
 uvr_mdx_model_list = ["Reverb_HQ_By_FoxJoy.onnx", "UVR-MDX-NET-Inst_Main.onnx"]
 uvr_vr_model_list = [
@@ -18,41 +24,10 @@ uvr_vr_model_list = [
 weights_dir = os.path.join(base_models_dir, "audio-separator")
 
 
-# def _uvr_command_warp(
-#     model_filename="",
-#     output_format="mp3",
-#     output_dir="",
-#     denoise=False,
-#     normalization=0.9,
-#     single_stem="",
-#     sample_rate=44100,
-#     model_type="mdx",
-#     mdx_args={},
-#     vr_args={},
-#     audio_file="",
-# ):
-#     model_file_dir = os.path.join(base_models_dir, "audio-separator")
-#     command = f"audio-separator --model_filename {model_filename} --output_format {output_format} \
-# --output_dir {output_dir} --normalization {normalization} --model_file_dir {model_file_dir} \
-# --sample_rate {sample_rate}"
-#     if denoise:
-#         command += " --denoise"
-#     if single_stem != "":
-#         command += f" --single_stem {single_stem}"
-#     if model_type == "mdx":
-#         for key, value in mdx_args.items():
-#             command += f" --{key} {value}"
-#     elif model_type == "vr":
-#         for key, value in vr_args.items():
-#             command += f" --{key} {value}"
-#     command += f" {audio_file}"
-#     return command
-
-
-async def exec_uvr_command(
+async def exec_uvr_command_gradio(
     model_filename="",
     output_format="mp3",
-    first_out_dir="",
+    primary_out_dir="",
     second_out_dir="",
     denoise=False,
     normalization=0.9,
@@ -62,9 +37,17 @@ async def exec_uvr_command(
     mdx_args={},
     vr_args={},
     audio_files=[],
+    gr_process=None,
 ):
+    print("Start to execute uvr command.\n\n")
+    args = inspect.getfullargspec(exec_uvr_command_gradio)
+    pprint.pprint(args)
     model_file_dir = os.path.join(base_models_dir, "audio-separator")
-    for audio_file in audio_files:
+    if not os.path.exists(primary_out_dir):
+        os.makedirs(primary_out_dir)
+    if not os.path.exists(second_out_dir):
+        os.makedirs(second_out_dir)
+    for audio_file in gr_process.tqdm(audio_files):
         primary_name = (
             os.path.basename(audio_file).split(".")[0]
             + "_primary."
@@ -75,7 +58,7 @@ async def exec_uvr_command(
             + "_secondary."
             + output_format.lower()
         )
-        primary_stem_output_path = os.path.join(first_out_dir, primary_name)
+        primary_stem_output_path = os.path.join(primary_out_dir, primary_name)
         secondary_stem_output_path = os.path.join(second_out_dir, secondary_name)
         if model_type == "mdx":
             separator = Separator(
@@ -103,4 +86,5 @@ async def exec_uvr_command(
             )
         separator.load_model(model_filename)
         separator.separate(audio_file)
+    print("\n\nFinishing UVR command execution.")
     return 0

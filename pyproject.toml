@@ -9,7 +9,7 @@ readme = "README.md"
 python = ">=3.10,<3.13"
 numpy = "^1.26.4"
 openai-whisper = "^20231117"
-gradio = "^4.17.0"
+gradio = "^4.19.1"
 aiofiles = "^23.2.1"
 requests = "^2.31.0"
 transformers = "^4.37.2"
@@ -29,6 +29,7 @@ audio-separator = {extras = ["gpu"], version = "^0.14.4"}
 timm = "^0.9.12"
 realesrgan = "^0.3.0"
 funasr = "^1.0.5"
+resampy = "^0.4.2"
 
 
 [[tool.poetry.source]]

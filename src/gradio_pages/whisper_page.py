@@ -2,7 +2,7 @@ import os
 import sys
 from time import sleep
 import gradio as gr
-from utils.utils import Logger
+from config import logger
 from config import base_work_dir
 import warp.whisper_warp as whisper_warp
 import utils.utils as utils
@@ -22,8 +22,6 @@ task_name = "whisper"
 task_token = ""
 process_hash = ""
 output_path = ""
-logs_dir = utils.get_logs_dir(task_type, task_name)
-logger = Logger(logs_dir)
 exec_logs_dir = ""
 pm = PM()
 

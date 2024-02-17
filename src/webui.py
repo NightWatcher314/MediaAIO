@@ -15,6 +15,7 @@ import asyncio
 script_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(script_path)
 
+
 # evnet_loop = asyncio.get_event_loop()
 # asyncio.set_event_loop(evnet_loop)
 # evnet_loop.run_until_complete(
@@ -68,8 +69,9 @@ sys.path.append(script_path)
 #     return text.lower() + "..."
 
 
-demo = gr.TabbedInterface([uvr_block.ui()], ["Whisper"])
+demo = gr.TabbedInterface([uvr_block.ui()], ["UVR5"])
 demo.queue(max_size=512)
-
 if __name__ == "__main__":
-    demo.launch(max_threads=4, share=False, debug=True, inline=True, auth=None)
+    demo.launch(
+        max_threads=4, share=False, debug=True, inline=True, auth=None, ssl_verify=False
+    )
