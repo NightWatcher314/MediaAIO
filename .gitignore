@@ -1,5 +1,9 @@
 logs/*
-models/*
+# models/*
 __pycache__
 flagged
 test_assets/*
+weights/*
+whisper
+*.pth
+*.onnx
