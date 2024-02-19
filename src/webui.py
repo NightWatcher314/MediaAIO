@@ -5,7 +5,7 @@ from time import sleep
 
 import gradio as gr
 import gradio_pages.uvr_block as uvr_block
-import gradio_pages.whisper_page as whisper_page
+import gradio_pages.speech_recognition_block as speech_recognition_block
 import gradio_pages.video_super_inter_block as video_super_inter_block
 import utils.utils as utils
 from warp import RobustVideoMatting_warp as rvm_warp
