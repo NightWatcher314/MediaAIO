@@ -81,7 +81,7 @@ def on_single_convert_click(
         )
         process.wait()
 
-    # 删除 ramdisk，并拷贝至 logs 目录
+    # 删除 ramdisk，并拷贝至 logs 目录，并修改输出路径
     if enable_ramdisk:
         exec_logs_dir_new = utils.get_exec_logs_dir(task_name, task_token)
         utils.copy_dir(exec_logs_dir, exec_logs_dir_new)

@@ -18,6 +18,7 @@ from config import base_models_dir
 
 whisper_models_dir = os.path.join(base_models_dir, "whisper")
 device = "cuda" if torch.cuda.is_available() else "cpu"
+model = None
 
 
 def whisper_command_warp(
@@ -35,6 +36,7 @@ def whisper_command_warp(
 def exec_whisper_command(
     file_path="", output_dir="", language="", model_type="", format=""
 ):
+    global model
     _check_and_download_model(model_type)
     model_path = _get_model_path(model_type)
     torch_dtype = torch.float16 if torch.cuda.is_available() else torch.float32
