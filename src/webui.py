@@ -1,19 +1,35 @@
-from time import sleep
-import gradio as gr
+import asyncio
 import os
 import sys
-import gradio_pages.whisper_page as whisper_page
+from time import sleep
+
+import gradio as gr
 import gradio_pages.uvr_block as uvr_block
+import gradio_pages.whisper_page as whisper_page
+import gradio_pages.video_super_inter_block as video_super_inter_block
 import utils.utils as utils
-from warp import whisper_warp
-from warp import realesrgan_warp
 from warp import RobustVideoMatting_warp as rvm_warp
-from warp import qwen_warp
-from warp import uvr_warp
-import asyncio
+from warp import qwen_warp, realesrgan_warp, uvr_warp, whisper_warp, rife_warp
 
 script_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(script_path)
+
+# rife_warp.test_video_execution()
+# realesrgan_warp.test_exec_realesrgan_video_command()
+
+demo = gr.TabbedInterface(
+    [video_super_inter_block.ui(), uvr_block.ui()], ["Video Super Inter", "UVR5"]
+)
+demo.queue(max_size=512)
+if __name__ == "__main__":
+    demo.launch(
+        max_threads=40,
+        share=False,
+        debug=True,
+        inline=True,
+        auth=None,
+        ssl_verify=False,
+    )
 
 
 # evnet_loop = asyncio.get_event_loop()
@@ -67,11 +83,3 @@ sys.path.append(script_path)
 # def whisper(text):
 #     sleep(10)
 #     return text.lower() + "..."
-
-
-demo = gr.TabbedInterface([uvr_block.ui()], ["UVR5"])
-demo.queue(max_size=512)
-if __name__ == "__main__":
-    demo.launch(
-        max_threads=4, share=False, debug=True, inline=True, auth=None, ssl_verify=False
-    )

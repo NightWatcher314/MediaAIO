@@ -9,7 +9,6 @@ import utils.utils as utils
 import inspect
 import pprint
 
-print(sys.stdout)
 
 uvr_mdx_model_list = ["Reverb_HQ_By_FoxJoy.onnx", "UVR-MDX-NET-Inst_Main.onnx"]
 uvr_vr_model_list = [
@@ -40,8 +39,6 @@ async def exec_uvr_command_gradio(
     gr_process=None,
 ):
     print("Start to execute uvr command.\n\n")
-    args = inspect.getfullargspec(exec_uvr_command_gradio)
-    pprint.pprint(args)
     model_file_dir = os.path.join(base_models_dir, "audio-separator")
     if not os.path.exists(primary_out_dir):
         os.makedirs(primary_out_dir)

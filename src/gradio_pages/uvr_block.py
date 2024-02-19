@@ -1,7 +1,5 @@
 import asyncio
 import os
-import sys
-from time import sleep
 import gradio as gr
 from config import logger
 import utils.utils as utils
@@ -29,6 +27,10 @@ def show_model_by_type(model_type):
             interactive=True,
             value=uvr_vr_model_list[0],
         )
+
+
+def on_stop_click():
+    event_loop.stop()
 
 
 def on_convert_click(
@@ -135,8 +137,6 @@ def ui():
                     label="Primary Audio Dir", value="Default"
                 )
                 second_file_dir = gr.Textbox(label="Second Audio Dir", value="Default")
-                primary_file_output = gr.File(label="Output Audio", visible=False)
-                second_file_output = gr.File(label="Output Audio", visible=False)
             with gr.Column():
                 with gr.Row():
                     convert_btn = gr.Button(value="Convert")
@@ -245,4 +245,5 @@ def ui():
             ],
             file_download,
         )
+        stop_btn.click(on_stop_click)
     return demo
