@@ -8,17 +8,23 @@ import gradio_pages.speech_recognition_block as speech_recognition_block
 import gradio_pages.video_super_inter_block as video_super_inter_block
 import utils.utils as utils
 from warp import RobustVideoMatting_warp as rvm_warp
-from warp import qwen_warp, realesrgan_warp, uvr_warp, whisper_warp, rife_warp
+from warp import (
+    qwen_warp,
+    realesrgan_warp,
+    uvr_warp,
+    whisper_warp,
+    rife_warp,
+    funasr_warp,
+)
 
 script_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(script_path)
 
 # rife_warp.test_video_execution()
 # realesrgan_warp.test_exec_realesrgan_video_command()
+# funasr_warp.test_exec_funasr_command()
 
-demo = gr.TabbedInterface(
-    [video_super_inter_block.ui(), uvr_block.ui()], ["Video Super Inter", "UVR5"]
-)
+demo = gr.TabbedInterface([speech_recognition_block.ui()], ["Speech Recognition"])
 demo.queue(max_size=512)
 if __name__ == "__main__":
     demo.launch(

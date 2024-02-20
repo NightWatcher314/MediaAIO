@@ -30,6 +30,9 @@ timm = "^0.9.12"
 realesrgan = "^0.3.0"
 funasr = "^1.0.5"
 resampy = "^0.4.2"
+torchaudio = "2.1.1"
+modelscope = "^1.12.0"
+rotary-embedding-torch = "^0.5.3"
 
 
 [[tool.poetry.source]]

@@ -24,6 +24,20 @@ class RamDisk:
         print("Ramdisk deleted")
 
 
+class StrWarp:
+    def __init__(self):
+        self.str = ""
+
+    def get_str(self):
+        return self.str
+
+    def set_str(self, str):
+        self.str = str
+
+    def append_str(self, str):
+        self.str += f"{str}\n"
+
+
 def get_exec_logs_dir(task_name: str, token, base_dir=base_logs_dir):
     logs_dir = os.path.join(base_dir, task_name, token)
     if not os.path.exists(logs_dir):
@@ -54,20 +68,24 @@ def zip_dir(dir_path, zip_file_path):
                         os.path.join(root, file), os.path.join(dir_path, "..")
                     ),
                 )
+    return zip_file_path
 
 
 def save_gradio_file(file, save_dir, filename):
     """
     保存 gradio 上传的文件
     """
-    shutil.copy(file, os.path.join(save_dir, filename))
+    return shutil.copy(file, os.path.join(save_dir, filename))
 
 
-def copy_file(src_file, dst_dir, dst_file_name):
+def copy_file(src_file, dst_dir, dst_file_name=None):
     """
     复制文件
     """
-    shutil.copy(src_file, os.path.join(dst_dir, dst_file_name))
+    if dst_file_name is None:
+        return shutil.copy(src_file, dst_dir)
+    else:
+        return shutil.copy(src_file, os.path.join(dst_dir, dst_file_name))
 
 
 def copy_dir(src_dir, dst_dir):
@@ -75,6 +93,19 @@ def copy_dir(src_dir, dst_dir):
     复制文件夹
     """
     shutil.copytree(src_dir, dst_dir, dirs_exist_ok=True)
+
+
+def generate_io_dir(src_dir):
+    """
+    生成输入输出文件夹
+    """
+    input_dir = os.path.join(src_dir, "input")
+    output_dir = os.path.join(src_dir, "output")
+    if not os.path.exists(input_dir):
+        os.makedirs(input_dir)
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    return input_dir, output_dir
 
 
 def read_text_file(file_path):

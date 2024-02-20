@@ -2,109 +2,176 @@ import os
 import sys
 from time import sleep
 import gradio as gr
-from config import logger
+import asyncio
 from config import base_work_dir
-import warp.whisper_warp as whisper_warp
+from warp.whisper_warp import (
+    whisper_model_list,
+    whisper_language_list,
+    whisper_format_list,
+    exec_whisper_command,
+)
+from warp.funasr_warp import funasr_model_list, exec_funasr_command
 import utils.utils as utils
-from utils.process_manager import ProcessManager as PM
 
 os.chdir(base_work_dir)
 print(os.getcwd())
 
-model_list = ["tiny", "base", "small", "medium", "large"]
-format_list = ["txt", "vtt", "srt", "json", "tsv", "all"]
-language_list = ["Chinese", "English"]
-task_list = ["transcribe", "translate"]
-
-
-task_type = "audio"
-task_name = "whisper"
+sr_model_list = whisper_model_list + funasr_model_list
+sr_language_list = whisper_language_list
+sr_format_list = whisper_format_list
+task_name = "speech_recognition"
 task_token = ""
-process_hash = ""
-output_path = ""
 exec_logs_dir = ""
-pm = PM()
-
-
-def show_file(file):
-    if file is None:
-        return None
-    return file
+logs_box_value = utils.StrWarp()
+event_loop = asyncio.new_event_loop()
 
 
 def on_stop_click():
-    process = pm.get_process_by_hash(process_hash)
-    process.terminate()
+    event_loop.stop()
 
 
-def on_convert_click(file_upload, model, language, output_format):
-    global task_token, process_hash, output_path
+def single_on_convert_click(file_upload, model, language, output_format):
+    global task_token, event_loop, logs_box_value
     if not file_upload:
         gr.Error("Please upload a file.")
-        return gr.Textbox("Please upload a file."), gr.File(visible=False)
-    task_token = utils.get_task_token(task_type, task_name)
-    exec_logs_dir = utils.get_exec_logs_dir(task_type, task_name, task_token)
-    input_format = file_upload.name.split(".")[-1]
-    utils.save_gradio_file(file_upload, exec_logs_dir, "input." + input_format)
+        return "", gr.File(visible=False)
+    asyncio.set_event_loop(event_loop)
+    task_token = utils.get_task_token(task_name)
+    exec_logs_dir = utils.get_exec_logs_dir(task_name, task_token)
+    input_format = file_upload.split(".")[-1]
+    utils.copy_file(file_upload, exec_logs_dir, "input." + input_format)
     input_path = os.path.join(exec_logs_dir, "input." + input_format)
     output_dir = os.path.join(exec_logs_dir)
     print("Starting process")
-    whisper_warp.exec_whisper_command(
-        file_path=input_path,
-        output_dir=output_dir,
-        model_type="medium",
-        language="Chinese",
-        format=output_format,
-    )
+    if model in whisper_model_list:
+        output_path = event_loop.run_until_complete(
+            exec_whisper_command(
+                file_paths=[input_path],
+                output_dir=output_dir,
+                language=language,
+                model_type=model,
+                format=output_format,
+            )
+        )[0]
+    else:
+        output_path = event_loop.run_until_complete(
+            exec_funasr_command(
+                input_files=[input_path],
+                output_dir=output_dir,
+                output_format=output_format,
+            )
+        )[0]
     print("Finished process")
-    output_path = os.path.join(output_dir, f"output.{output_format}")
     output_text = utils.read_text_file(output_path)
     return output_text, gr.File(output_path, visible=True)
 
 
+def batch_on_convert_click(file_uploads, model, language, output_format):
+    global task_token, event_loop, logs_box_value
+    if not file_uploads:
+        gr.Error("Please upload a file.")
+        return "", gr.File(visible=False)
+    asyncio.set_event_loop(event_loop)
+    task_token = utils.get_task_token(task_name)
+    exec_logs_dir = utils.get_exec_logs_dir(task_name, task_token)
+    input_dir, output_dir = utils.generate_io_dir(exec_logs_dir)
+    input_paths = []
+    for file_upload in file_uploads:
+        input_paths.append(utils.copy_file(file_upload, input_dir))
+    print("Starting process")
+    if model in whisper_model_list:
+        output_paths = event_loop.run_until_complete(
+            exec_whisper_command(
+                file_paths=input_paths,
+                output_dir=output_dir,
+                language=language,
+                model_type=model,
+                format=output_format,
+            )
+        )
+    else:
+        output_paths = event_loop.run_until_complete(
+            exec_funasr_command(
+                input_files=input_paths,
+                output_dir=output_dir,
+                output_format=output_format,
+            )
+        )
+    print("Finished process")
+    output_text = ""
+    for output_path in output_paths:
+        output_text += utils.read_text_file(output_path) + "\n"
+    zip_file_path = utils.zip_dir(output_dir, os.path.join(exec_logs_dir, "output.zip"))
+    return output_text, gr.File(zip_file_path, visible=True)
+
+
 def ui():
     with gr.Blocks() as demo:
-        with gr.Group():
+        with gr.Accordion(label="Single File"):
             with gr.Row():
                 with gr.Column():
-                    file_upload = gr.File(
-                        label="Audio File",
-                        file_types=["audio"],
-                        scale=1,
-                    )
-                    audio_display = gr.Audio(scale=1)
-                    file_upload.change(show_file, file_upload, audio_display)
-                with gr.Column():
-                    output = gr.Textbox(label="Output Text")
-                    download_file = gr.File(
+                    single_file_upload = gr.Audio(label="Upload Audio", type="filepath")
+                    single_download_file = gr.File(
                         label="Download File", type="filepath", visible=False
                     )
-        with gr.Group():
+                with gr.Column():
+                    with gr.Row():
+                        single_convert_btn = gr.Button(value="Convert")
+                        single_stop_btn = gr.Button(value="Stop")
+                    with gr.Row():
+                        single_output_text = gr.TextArea(
+                            value="",
+                            label="Output Text",
+                            lines=8,
+                            max_lines=10,
+                            visible=True,
+                        )
+        with gr.Accordion(label="Batch File"):
+            with gr.Row():
+                with gr.Column():
+                    batch_file_upload = gr.Files(label="Upload Audio", type="filepath")
+                    batch_download_file = gr.File(
+                        label="Download File", type="filepath", visible=False
+                    )
+                with gr.Column():
+                    with gr.Row():
+                        batch_convert_btn = gr.Button(value="Convert")
+                        batch_stop_btn = gr.Button(value="Stop")
+                    with gr.Row():
+                        batch_output_text = gr.TextArea(
+                            value="",
+                            label="Output Text",
+                            lines=8,
+                            max_lines=10,
+                            visible=True,
+                        )
+
+        with gr.Accordion(label="Parameters"):
             with gr.Row():
                 with gr.Column():
                     model = gr.Dropdown(
-                        label="Model", choices=model_list, value=model_list[1]
+                        label="Model", choices=sr_model_list, value=sr_model_list[1]
                     )
                     language = gr.Dropdown(
-                        label="Language", choices=language_list, value=language_list[0]
+                        label="Language",
+                        choices=sr_language_list,
+                        value=sr_language_list[0],
                     )
                 with gr.Column():
                     output_format = gr.Dropdown(
-                        label="Output Format", choices=format_list, value=format_list[0]
+                        label="Output Format",
+                        choices=sr_format_list,
+                        value=sr_format_list[0],
                     )
-        with gr.Row():
-            with gr.Column():
-                convert_btn = gr.Button(value="Convert")
-            with gr.Column():
-                stop_btn = gr.Button(value="Stop")
-        logs_box = gr.Textbox(label="Logs", max_lines=10)
-        # demo.load(logger.read_logs, None, logs_box, every=1)
-        convert_btn.click(
-            on_convert_click,
-            [file_upload, model, language, output_format],
-            [output, download_file],
+        single_convert_btn.click(
+            single_on_convert_click,
+            [single_file_upload, model, language, output_format],
+            [single_output_text, single_download_file],
         )
-
-        stop_btn.click(on_stop_click)
-
+        single_stop_btn.click(on_stop_click)
+        batch_convert_btn.click(
+            batch_on_convert_click,
+            [batch_file_upload, model, language, output_format],
+            [batch_output_text, batch_download_file],
+        )
     return demo
