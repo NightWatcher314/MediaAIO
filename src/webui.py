@@ -1,7 +1,6 @@
 import asyncio
 import os
 import sys
-from time import sleep
 
 import gradio as gr
 import gradio_pages.uvr_block as uvr_block
