@@ -44,6 +44,19 @@ def whisper_command_warp(
 async def exec_whisper_command(
     file_paths="", output_dir="", language="", model_type="", format=""
 ):
+    """
+    执行 Whisper 命令的异步函数。
+
+    参数：
+    - file_paths: 要处理的文件路径列表。
+    - output_dir: 输出文件的目录。
+    - language: 语言设置。
+    - model_type: 模型类型。
+    - format: 输出文件的格式。
+
+    返回：
+    - output_paths: 输出文件的路径列表。
+    """
     model_id = f"openai/{model_type}"
     torch_dtype = torch.float16 if torch.cuda.is_available() else torch.float32
     model = AutoModelForSpeechSeq2Seq.from_pretrained(
@@ -87,6 +100,15 @@ async def exec_whisper_command(
 
 
 def _parse_result_to_srt(result):
+    """
+    将结果解析为SRT格式的字幕文本。
+
+    参数：
+    result (dict): 包含结果信息的字典。
+
+    返回：
+    str: SRT格式的字幕文本。
+    """
     ret_result = ""
     for i, chunk in enumerate(result["chunks"]):
         startTime = str(0) + str(timedelta(seconds=int(chunk["timestamp"][0]))) + ",000"

@@ -36,15 +36,34 @@ async def exec_uvr_command_gradio(
     mdx_args={},
     vr_args={},
     audio_files=[],
-    gr_process=None,
 ):
-    print("Start to execute uvr command.\n\n")
+    """
+    执行 UVR 命令的异步函数。
+
+    Args:
+        model_filename (str, optional): 模型文件名。默认为空字符串。
+        output_format (str, optional): 输出格式。默认为 "mp3"。
+        primary_out_dir (str, optional): 主音频输出目录。默认为空字符串。
+        second_out_dir (str, optional): 次音频输出目录。默认为空字符串。
+        denoise (bool, optional): 是否进行降噪。默认为 False。
+        normalization (float, optional): 归一化阈值。默认为 0.9。
+        sample_rate (int, optional): 采样率。默认为 44100。
+        single_stem (str, optional): 单音频输出路径。默认为 None。
+        model_type (str, optional): 模型类型。默认为 "mdx"。
+        mdx_args (dict, optional): MDX 参数。默认为空字典。
+        vr_args (dict, optional): VR 参数。默认为空字典。
+        audio_files (list, optional): 音频文件列表。默认为空列表。
+
+    Returns:
+        int: 返回值为 0。
+    """
+    print("开始执行 UVR 命令。\n\n")
     model_file_dir = os.path.join(base_models_dir, "audio-separator")
     if not os.path.exists(primary_out_dir):
         os.makedirs(primary_out_dir)
     if not os.path.exists(second_out_dir):
         os.makedirs(second_out_dir)
-    for audio_file in gr_process.tqdm(audio_files):
+    for audio_file in audio_files:
         primary_name = (
             os.path.basename(audio_file).split(".")[0]
             + "_primary."
@@ -83,5 +102,5 @@ async def exec_uvr_command_gradio(
             )
         separator.load_model(model_filename)
         separator.separate(audio_file)
-    print("\n\nFinishing UVR command execution.")
+    print("\n\nUVR 命令执行完成。")
     return 0

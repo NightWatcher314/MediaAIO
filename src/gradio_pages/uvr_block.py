@@ -98,7 +98,6 @@ def on_convert_click(
             mdx_args=mdx_args,
             vr_args=vr_args,
             audio_files=file_uploads,
-            gr_process=gr_process,
         )
     )
 

@@ -1,16 +1,23 @@
 import asyncio
 from datetime import timedelta
 from funasr import AutoModel
-import json
-from pprint import pprint
 
-# paraformer-zh is a multi-functional asr model
-# use vad, punc, spk or not as you need
 
 funasr_model_list = ["paraformer-zh"]
 
 
 async def exec_funasr_command(input_files, output_dir, output_format="srt"):
+    """
+    执行 FunASR 命令，将输入文件转换为指定格式的文本文件。
+
+    参数：
+    - input_files：输入文件的路径列表。
+    - output_dir：输出文件的目录。
+    - output_format：输出文件的格式，默认为 "srt"。
+
+    返回：
+    - output_paths：输出文件的路径列表。
+    """
     model = AutoModel(
         model="paraformer-zh",
         model_revision="v2.0.4",

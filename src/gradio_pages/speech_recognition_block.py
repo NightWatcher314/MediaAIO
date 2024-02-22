@@ -14,7 +14,6 @@ from warp.funasr_warp import funasr_model_list, exec_funasr_command
 import utils.utils as utils
 
 os.chdir(base_work_dir)
-print(os.getcwd())
 
 sr_model_list = whisper_model_list + funasr_model_list
 sr_language_list = whisper_language_list
