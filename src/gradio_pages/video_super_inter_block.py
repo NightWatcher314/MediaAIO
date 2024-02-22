@@ -5,9 +5,9 @@ from config import logger
 import utils.utils as utils
 from warp.realesrgan_warp import (
     reg_model_list,
-    exec_realesrgan_video_command_in_subprocess,
+    exec_realesrgan_command,
 )
-from warp.rife_warp import rife_model_list, exec_rife_video_command_in_subprocess
+from warp.rife_warp import rife_model_list, exec_rife_video_command
 
 task_name = "video_super_inter"
 task_token = ""
@@ -57,7 +57,7 @@ def on_single_convert_click(
     # 开始执行 超分辨率 视频命令
     if enable_super:
         print("Start to exec RealESRGAN video command\n\n")
-        process, output_file_path = exec_realesrgan_video_command_in_subprocess(
+        output_file_path = exec_realesrgan_command(
             input_path=input_video,
             output_dir=exec_logs_dir,
             model=super_model,
@@ -66,20 +66,18 @@ def on_single_convert_click(
             face_enhance=super_face_enhance,
             tile=super_tile,
             fp32=super_fp32,
-        )
-        process.wait()
+        )[0]
 
     if enable_inter:
         # 开始执行 插帧 视频命令
         print("Start to exec RIFE video command\n\n")
-        process, output_file_path = exec_rife_video_command_in_subprocess(
+        output_file_path = exec_rife_video_command(
             input_path=output_file_path if enable_super else input_video,
             exp=inter_exp,
             scale=inter_scale,
             fp16=inter_fp16,
             montage=inter_montage,
-        )
-        process.wait()
+        )[0]
 
     # 删除 ramdisk，并拷贝至 logs 目录，并修改输出路径
     if enable_ramdisk:

@@ -6,8 +6,9 @@ import gradio as gr
 import gradio_pages.uvr_block as uvr_block
 import gradio_pages.speech_recognition_block as speech_recognition_block
 import gradio_pages.video_super_inter_block as video_super_inter_block
+import gradio_pages.image_super_block as image_super_block
 import utils.utils as utils
-from warp import RobustVideoMatting_warp as rvm_warp, llm_warp
+from warp import RobustVideoMatting_warp as rvm_warp
 from warp import (
     realesrgan_warp,
     uvr_warp,
@@ -24,7 +25,7 @@ sys.path.append(script_path)
 # funasr_warp.test_exec_funasr_command()
 # llm_warp._test_llm()
 
-demo = gr.TabbedInterface([speech_recognition_block.ui()], ["Speech Recognition"])
+demo = gr.TabbedInterface([image_super_block.ui()], ["Speech Recognition"])
 demo.queue(max_size=512)
 if __name__ == "__main__":
     demo.launch(

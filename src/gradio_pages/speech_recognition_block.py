@@ -30,7 +30,7 @@ def on_stop_click():
 
 
 def single_on_convert_click(file_upload, model, language, output_format):
-    global task_token, event_loop, logs_box_value
+    global task_token, event_loop, logs_box_value, exec_logs_dir
     if not file_upload:
         gr.Error("Please upload a file.")
         return "", gr.File(visible=False)

@@ -88,6 +88,16 @@ def copy_file(src_file, dst_dir, dst_file_name=None):
         return shutil.copy(src_file, os.path.join(dst_dir, dst_file_name))
 
 
+def copy_files(src_files, dst_dir):
+    """
+    复制一系列文件
+    """
+    output_paths = []
+    for src_file in src_files:
+        output_paths.append(shutil.copy(src_file, dst_dir))
+    return output_paths
+
+
 def copy_dir(src_dir, dst_dir):
     """
     复制文件夹

@@ -21,7 +21,7 @@ video_inference_path = os.path.join(
 srcipt_dir = os.path.join(base_models_dir, "Real-ESRGAN")
 
 
-def exec_realesrgan_video_command(
+async def exec_realesrgan_command(
     input_paths=[],
     output_dir="",
     model="RealESRGAN_x4plus",
@@ -30,6 +30,7 @@ def exec_realesrgan_video_command(
     face_enhance=False,
     tile=0,
     fp32=False,
+    task_type="video",
 ) -> list[str]:
     """
     执行 RealESRGAN 视频命令。
@@ -43,6 +44,7 @@ def exec_realesrgan_video_command(
     - face_enhance：是否进行人脸增强，默认为 False。
     - tile：分块大小，默认为 0。
     - fp32：是否使用 FP32 模式，默认为 False。
+    - task_type：任务类型，默认为 "video"。
 
     返回：
     - output_paths：输出视频文件路径列表。
@@ -58,7 +60,10 @@ def exec_realesrgan_video_command(
         output_paths.append(output_file_path)
         try:
             os.chdir(srcipt_dir)
-            command = f"python {video_inference_path} -i '{input_path}' -o '{output_dir}' -n {model} -s {scale} -t {tile}"
+            if task_type == "video":
+                command = f"python {video_inference_path} -i '{input_path}' -o '{output_dir}' -n {model} -s {scale} -t {tile}"
+            else:
+                command = f"python {image_inference_path} -i '{input_path}' -o '{output_dir}' -n {model} -s {scale} -t {tile}"
             if face_enhance:
                 command += " --face_enhance"
             if fp32:
@@ -70,12 +75,12 @@ def exec_realesrgan_video_command(
             p.wait()
         finally:
             os.chdir(base_work_dir)
-    print("\n\nRealESRGAN 视频命令执行完毕")
+    print("\n\nRealESRGAN 命令执行完毕")
     return output_paths
 
 
-def test_exec_realesrgan_video_command():
-    p = exec_realesrgan_video_command(
+def test_exec_realesrgan_command():
+    p = exec_realesrgan_command(
         input_path=["/home/night/Code/MediaAIO/test_assets/video_test.mp4"],
         output_dir="/home/night/Code/MediaAIO/test_assets",
         model="RealESRGAN_x4plus",
