@@ -14,28 +14,31 @@ from warp import (
     uvr_warp,
     whisper_warp,
     rife_warp,
+    SwinIR_warp,
+    VRT_warp,
     funasr_warp,
+    nafnet_warp,
 )
 
 script_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(script_path)
-
+VRT_warp.test_VRT_warp()
 # rife_warp.test_video_execution()
 # realesrgan_warp.test_exec_realesrgan_video_command()
 # funasr_warp.test_exec_funasr_command()
 # llm_warp._test_llm()
-
-demo = gr.TabbedInterface([image_super_block.ui()], ["Speech Recognition"])
-demo.queue(max_size=512)
-if __name__ == "__main__":
-    demo.launch(
-        max_threads=40,
-        share=False,
-        debug=True,
-        inline=True,
-        auth=None,
-        ssl_verify=False,
-    )
+# nafnet_warp.test_exec_nafnet()
+# demo = gr.TabbedInterface([image_super_block.ui()], ["Speech Recognition"])
+# demo.queue(max_size=512)
+# if __name__ == "__main__":
+#     demo.launch(
+#         max_threads=40,
+#         share=False,
+#         debug=True,
+#         inline=True,
+#         auth=None,
+#         ssl_verify=False,
+#     )
 
 
 # evnet_loop = asyncio.get_event_loop()

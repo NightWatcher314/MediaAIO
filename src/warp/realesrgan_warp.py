@@ -1,6 +1,6 @@
 import os
 import subprocess
-import sys
+import utils.utils as utils
 from config import base_models_dir, base_work_dir, logger
 
 reg_model_list = [
@@ -49,7 +49,7 @@ async def exec_realesrgan_command(
     返回：
     - output_paths：输出视频文件路径列表。
     """
-    print("开始执行 RealESRGAN 视频命令\n\n")
+    logger.info("开始执行 RealESRGAN 命令。")
     output_paths = []
     for input_path in input_paths:
         input_file_name = input_path.split("/")[-1]
@@ -70,12 +70,10 @@ async def exec_realesrgan_command(
                 command += " --fp32"
             if model == "realesr-general-x4v3":
                 command += f" -dn {denoise} "
-            print(command)
-            p = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
-            p.wait()
+            utils.run_util_complete(command)
         finally:
             os.chdir(base_work_dir)
-    print("\n\nRealESRGAN 命令执行完毕")
+    logger.info("RealESRGAN 命令执行完成。")
     return output_paths
 
 

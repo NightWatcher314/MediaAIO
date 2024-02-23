@@ -1,19 +1,12 @@
 from datetime import timedelta
-import shutil
-import sys
-import time
-import hashlib
 import os
-import subprocess
-from typing import Union
-import warnings
-import torch
+
 from tqdm import tqdm
-import transformers
+from config import logger
+import torch
 from transformers import pipeline, AutoModelForSpeechSeq2Seq, AutoProcessor
-import urllib
-import whisper
-from config import base_models_dir
+
+import utils.utils as utils
 
 whisper_model_list = [
     "whisper-tiny",
@@ -27,18 +20,6 @@ whisper_language_list = ["Auto", "Chinese", "English"]
 whisper_task_list = ["transcribe", "translate"]
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
-
-
-def whisper_command_warp(
-    file_path,
-    output_dir=None,
-    language="Chinese",
-    model="base",
-    format="txt",
-):
-    command = f"whisper {file_path} --model {model} --language {language} --verbose True\
-        --output_dir {output_dir} --output_format {format}"
-    return command
 
 
 async def exec_whisper_command(
@@ -57,6 +38,7 @@ async def exec_whisper_command(
     返回：
     - output_paths: 输出文件的路径列表。
     """
+    logger.info("开始执行 Whisper 命令。")
     model_id = f"openai/{model_type}"
     torch_dtype = torch.float16 if torch.cuda.is_available() else torch.float32
     model = AutoModelForSpeechSeq2Seq.from_pretrained(
@@ -80,7 +62,9 @@ async def exec_whisper_command(
         device=device,
     )
     output_paths = []
-    for file_path in file_paths:
+    for file_path in tqdm(file_paths):
+        if utils.detect_file_type(file_path) == "video":
+            file_path = utils.convert_video_to_audio(file_path)
         if language == "Auto":
             result = pipe(file_path, generate_kwargs={"task": "transcribe"})
         else:
@@ -96,6 +80,7 @@ async def exec_whisper_command(
             with open(output_path, "w", encoding="utf-8") as txtFile:
                 txtFile.write(result["text"])
         output_paths.append(output_path)
+    logger.info("Whisper 命令执行完毕。")
     return output_paths
 
 

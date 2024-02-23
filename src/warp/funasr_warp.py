@@ -1,6 +1,9 @@
 import asyncio
 from datetime import timedelta
 from funasr import AutoModel
+from tqdm import tqdm
+from config import logger
+import utils.utils as utils
 
 
 funasr_model_list = ["paraformer-zh"]
@@ -18,6 +21,7 @@ async def exec_funasr_command(input_files, output_dir, output_format="srt"):
     返回：
     - output_paths：输出文件的路径列表。
     """
+    logger.info("开始执行 FunASR 命令。")
     model = AutoModel(
         model="paraformer-zh",
         model_revision="v2.0.4",
@@ -29,7 +33,9 @@ async def exec_funasr_command(input_files, output_dir, output_format="srt"):
         spk_model_revision="v2.0.2",
     )
     output_paths = []
-    for input_file in input_files:
+    for input_file in tqdm(input_files):
+        if utils.detect_file_type(input_file) == "video":
+            input_file = utils.convert_video_to_audio(input_file)
         res = model.generate(
             input=input_file,
             batch_size_s=300,
@@ -44,19 +50,22 @@ async def exec_funasr_command(input_files, output_dir, output_format="srt"):
         with open(output_path, "w", encoding="utf-8") as file:
             file.write(content)
         output_paths.append(output_path)
+    logger.info("FunASR 命令执行完毕。")
     return output_paths
 
 
 def test_exec_funasr_command():
-    asyncio.run(
-        exec_funasr_command(
-            [
-                "/home/night/Code/MediaAIO/test_assets/audio/a.mp3",
-                "/home/night/Code/MediaAIO/test_assets/audio/audio.aac",
-            ],
-            "/home/night/Code/MediaAIO/test_assets",
-        )
-    )
+    # print(
+    #     utils.detect_file_type("/home/night/Code/MediaAIO/test_assets/video/演示.mp4")
+    # )
+    # utils.convert_video_to_audio("/home/night/Code/MediaAIO/test_assets/video/test.mp4")
+    # asyncio.run(
+    #     exec_funasr_command(
+    #         ["/home/night/Code/MediaAIO/test_assets/video/test.mp4"],
+    #         "/home/night/Code/MediaAIO/test_assets",
+    #     )
+    # )
+    pass
 
 
 def _parse_result_to_srt(result):

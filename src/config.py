@@ -14,7 +14,7 @@ base_work_dir = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src"
 )
 
-_tmp_logs_dir = os.path.join(base_logs_dir, "tmp")
+_tmp_logs_dir = os.path.join(base_logs_dir, "all")
 if not os.path.exists(_tmp_logs_dir):
     os.makedirs(_tmp_logs_dir)
 logger = Logger(_tmp_logs_dir)

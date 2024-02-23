@@ -5,9 +5,9 @@ from config import base_models_dir, base_work_dir
 from audio_separator.separator import Separator
 import asyncio
 import sys
+from config import logger
+from tqdm import tqdm
 import utils.utils as utils
-import inspect
-import pprint
 
 
 uvr_mdx_model_list = ["Reverb_HQ_By_FoxJoy.onnx", "UVR-MDX-NET-Inst_Main.onnx"]
@@ -57,13 +57,12 @@ async def exec_uvr_command_gradio(
     Returns:
         int: 返回值为 0。
     """
-    print("开始执行 UVR 命令。\n\n")
-    model_file_dir = os.path.join(base_models_dir, "audio-separator")
+    logger.info("开始执行 UVR 命令。")
     if not os.path.exists(primary_out_dir):
         os.makedirs(primary_out_dir)
     if not os.path.exists(second_out_dir):
         os.makedirs(second_out_dir)
-    for audio_file in audio_files:
+    for audio_file in tqdm(audio_files):
         primary_name = (
             os.path.basename(audio_file).split(".")[0]
             + "_primary."
@@ -78,7 +77,7 @@ async def exec_uvr_command_gradio(
         secondary_stem_output_path = os.path.join(second_out_dir, secondary_name)
         if model_type == "mdx":
             separator = Separator(
-                model_file_dir=model_file_dir,
+                model_file_dir=weights_dir,
                 output_single_stem=single_stem,
                 enable_denoise=denoise,
                 normalization_threshold=normalization,
@@ -90,7 +89,7 @@ async def exec_uvr_command_gradio(
             )
         elif model_type == "vr":
             separator = Separator(
-                model_file_dir=model_file_dir,
+                model_file_dir=weights_dir,
                 output_single_stem=single_stem,
                 enable_denoise=denoise,
                 normalization_threshold=normalization,
@@ -102,5 +101,5 @@ async def exec_uvr_command_gradio(
             )
         separator.load_model(model_filename)
         separator.separate(audio_file)
-    print("\n\nUVR 命令执行完成。")
+    logger.info("UVR 命令执行完成。")
     return 0

@@ -1,7 +1,7 @@
 import asyncio
 import os
-import subprocess
-from config import base_models_dir, base_work_dir
+import utils.utils as utils
+from config import base_models_dir, base_work_dir, logger
 
 rife_model_list = ["RIFE"]
 script_dir = os.path.join(base_models_dir, "ECCV2022-RIFE")
@@ -17,21 +17,6 @@ def _rife_video_command_warp(
     montage=False,
     fps=None,
 ):
-    """
-    生成RIFE视频处理命令。
-
-    参数：
-    input_path (str): 输入视频文件路径。
-    output_path (str): 输出视频文件路径。
-    exp (int): RIFE模型的扩展因子, 默认为2。
-    scale (int): 缩放因子, 默认为1。
-    fp16 (bool): 是否使用FP16精度进行推理, 默认为False。
-    montage (bool): 是否生成蒙太奇视频, 默认为False。
-    fps (int): 输出视频的帧率, 默认为None。
-
-    返回：
-    str: RIFE视频处理命令。
-    """
     command = f"python {inference_video_path} --exp={exp} --scale={scale} --video='{input_path}' --output='{output_path}'"
     if fp16:
         command += " --fp16"
@@ -68,6 +53,7 @@ async def exec_rife_video_command(
 
     异步函数。
     """
+    logger.info("开始执行 RIFE 视频命令。")
     output_paths = []
     for input_path in input_paths:
         input_ext = input_path.split(".")[-1]
@@ -84,10 +70,10 @@ async def exec_rife_video_command(
             command = _rife_video_command_warp(
                 input_path, output_path, exp, scale, fp16, montage, fps
             )
-            p = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
-            p.wait()
+            utils.run_util_complete(command)
         finally:
             os.chdir(base_work_dir)
+    logger.info("RIFE 视频命令执行完成。")
     return output_paths
 
 

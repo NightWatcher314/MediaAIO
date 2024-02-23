@@ -6,9 +6,8 @@ authors = ["NightWatcher <hitszzzf@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.13"
+python = ">=3.10,<3.11"
 numpy = "^1.26.4"
-openai-whisper = "^20231117"
 gradio = "^4.19.1"
 aiofiles = "^23.2.1"
 requests = "^2.31.0"
@@ -33,6 +32,9 @@ resampy = "^0.4.2"
 torchaudio = "2.1.1"
 modelscope = "^1.12.0"
 rotary-embedding-torch = "^0.5.3"
+moviepy = "^1.0.3"
+python-magic = "^0.4.27"
+hdbscan = "^0.8.33"
 
 
 [[tool.poetry.source]]
