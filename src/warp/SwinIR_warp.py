@@ -1,7 +1,7 @@
 import asyncio
 import tempfile
 from typing import List, Literal, Optional
-from config import base_models_dir, base_work_dir
+from config import base_models_dir, base_work_dir, logger
 import subprocess
 import os
 import utils.utils as utils
@@ -27,37 +27,42 @@ async def exec_swinir_command(
     scale: Literal[1, 2, 3, 4, 8] = 4,
     noise: Literal[15, 25, 50] = 15,
 ):
+    logger.info("开始执行 SwinIR 命令。")
     utils.clear_dir(results_dir)
     tmp_dir = tempfile.TemporaryDirectory()
     utils.copy_files(input_files, tmp_dir.name)
-    os.chdir(script_dir)
-    match task:
-        case "real_sr":
-            save_dir = os.path.join(results_dir, f"swinir_{task}_x{scale}")
-            model_path = model_paths["real_sr"].format(scale)
-            if large_model:
-                save_dir = save_dir + "_large"
-                model_path = model_paths["real_sr_l"].format(scale)
-            command = f"python main_test_swinir.py --task {task} --scale {scale} \
-                --model_path {model_path} \
-                --folder_lq {tmp_dir.name}"
-            if large_model:
-                command += " --large_model"
-        case "gray_dn":
-            save_dir = os.path.join(results_dir, f"swinir_{task}_noise{noise}")
-            command = f"python main_test_swinir.py --task {task} --noise {noise} \
-                --model_path {model_paths[task].format(noise)} \
-                --folder_gt {tmp_dir.name}"
-        case "color_dn":
-            save_dir = os.path.join(results_dir, f"swinir_{task}_noise{noise}")
-            command = f"python main_test_swinir.py --task {task} --noise {noise} \
-                --model_path {model_paths[task].format(noise)} \
-                --folder_gt {tmp_dir.name}"
-    if tile is not None:
-        command += f" --tile {tile}"
-    utils.run_util_complete(command)
-    utils.copy_dir(save_dir, output_dir)
-    os.chdir(base_work_dir)
+    try:
+        os.chdir(script_dir)
+        match task:
+            case "real_sr":
+                save_dir = os.path.join(results_dir, f"swinir_{task}_x{scale}")
+                model_path = model_paths["real_sr"].format(scale)
+                if large_model:
+                    save_dir = save_dir + "_large"
+                    model_path = model_paths["real_sr_l"].format(scale)
+                command = f"python main_test_swinir.py --task {task} --scale {scale} \
+                    --model_path {model_path} \
+                    --folder_lq {tmp_dir.name}"
+                if large_model:
+                    command += " --large_model"
+            case "gray_dn":
+                save_dir = os.path.join(results_dir, f"swinir_{task}_noise{noise}")
+                command = f"python main_test_swinir.py --task {task} --noise {noise} \
+                    --model_path {model_paths[task].format(noise)} \
+                    --folder_gt {tmp_dir.name}"
+            case "color_dn":
+                save_dir = os.path.join(results_dir, f"swinir_{task}_noise{noise}")
+                command = f"python main_test_swinir.py --task {task} --noise {noise} \
+                    --model_path {model_paths[task].format(noise)} \
+                    --folder_gt {tmp_dir.name}"
+        if tile is not None:
+            command += f" --tile {tile}"
+        utils.run_util_complete(command)
+        utils.copy_dir(save_dir, output_dir)
+    finally:
+        os.chdir(base_work_dir)
+    logger.info("SwinIR 命令执行完毕。")
+    return output_dir
 
 
 def test_swinir_warp():

@@ -1,8 +1,10 @@
 import asyncio
 import os
 import subprocess
+
+from tqdm import tqdm
 import utils.utils as utils
-from config import base_models_dir, base_work_dir
+from config import base_models_dir, base_work_dir, logger
 
 nafnet_model_list = [
     "NAFNet-width64-GoPro",
@@ -14,8 +16,9 @@ inference_path = os.path.join(script_dir, "basicsr/demo.py")
 
 
 async def exec_nafnet_command(input_paths=[], output_dir="", model=""):
+    logger.info("开始执行 NAFNet 命令。")
     output_paths = []
-    for input_path in input_paths:
+    for input_path in tqdm(input_paths):
         input_name, input_ext = os.path.splitext(input_path)
         model_type = model.split("-")[-1]
         model_name = "-".join(model.split("-")[:-1])
@@ -34,10 +37,11 @@ async def exec_nafnet_command(input_paths=[], output_dir="", model=""):
             output_paths.append(output_path)
         finally:
             os.chdir(base_work_dir)
+    logger.info("NAFNet 命令执行完毕。")
     return output_paths
 
 
-def test_exec_nafnet():
+def _test_exec_nafnet():
     asyncio.run(
         exec_nafnet_command(
             input_paths=[
