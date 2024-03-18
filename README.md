@@ -36,7 +36,7 @@
   - [4. 项目示例](#4-项目示例)
     - [4.1 视频部分](#41-视频部分)
       - [4.1.1 视频超分辨率](#411-视频超分辨率)
-      - [4.1.2 视频插针](#412-视频插针)
+      - [4.1.2 视频插帧](#412-视频插帧)
       - [4.1.3 背景分离](#413-背景分离)
     - [4.2 图像部分](#42-图像部分)
       - [4.2.1 图像超分辨率](#421-图像超分辨率)
@@ -56,6 +56,8 @@
 ### 2.1 整体配置
 
 请确保你的环境中有 cuda ，本项目目前只在 cuda11.8 上进行过测试。
+
+对于每个项目的models文件，请自行下载，会提供下载链接，目前支持自动下载的有 RealESRGAN,NAFNet,SWINIR,RobustVideoMatting,Whisper-Faster 模型。
 
 #### 2.1.1 使用 Poetry(建议)
 
@@ -97,7 +99,7 @@ poetry run python setup.py develop --no_cuda_ext
 
 ![视频超分辨率](./images/video_super.png)
 
-#### 4.1.2 视频插针
+#### 4.1.2 视频插帧
 
 支持 RIFE 与 VRT 两类视频插针模型。
 
@@ -183,7 +185,7 @@ filetree
 
 ### 版权说明
 
-该项目签署了 BSD 3-Clause 授权许可，详情请参阅 [LICENSE.txt](https://github.com/shaojintian/Best_README_template/blob/master/LICENSE.txt)
+该项目签署了 BSD 3-Clause 授权许可，详情请参阅 [LICENSE.txt](https://github.com/NightWatcher314/MediaAIO/blob/main/LICENSE.txt)
 
 ### 鸣谢
 

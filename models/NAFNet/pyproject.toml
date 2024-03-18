@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "nafnet"
+version = "0.1.0"
+description = ""
+authors = ["NightWatcher <hitszzzf@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+addict = "^2.4.0"
+future = "^1.0.0"
+opencv-python = "^4.9.0.80"
+sympy = "^1.12"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

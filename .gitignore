@@ -3,8 +3,15 @@ logs/*
 __pycache__
 flagged
 test_assets/*
-weights/*
-models/*
+weights
+.eggs
+*.bin
+whisper-faster
+_models
+test_assets
+figs
+assets
+testsets
 whisper
 *.pth
 *.onnx

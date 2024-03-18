@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "eccv2022-rife"
+version = "0.1.0"
+description = ""
+authors = ["NightWatcher <hitszzzf@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+numpy = ">=1.16,<=1.23.5"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
