@@ -1,0 +1,54 @@
+[tool.poetry]
+name = "mediaaio"
+version = "0.1.0"
+description = ""
+authors = ["NightWatcher <hitszzzf@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+torch = { url = "https://download.pytorch.org/whl/cu118/torch-2.1.1%2Bcu118-cp311-cp311-win_amd64.whl" }
+torchaudio = { url = "https://download.pytorch.org/whl/cu118/torchaudio-2.1.1%2Bcu118-cp311-cp311-win_amd64.whl" }
+torchvision = { url = "https://download.pytorch.org/whl/cu118/torchvision-0.16.1%2Bcu118-cp311-cp311-win_amd64.whl" }
+transformers = "^4.38.1"
+funasr = "^1.0.10"
+audio-separator = { extras = ["gpu"], version = "^0.15.0" }
+pytest = "^8.0.2"
+faster-whisper = "^1.0.0"
+optimum = { extras = ["onnxruntime-gpu"], version = "^1.17.1" }
+moviepy = "^1.0.3"
+python-magic = "^0.4.27"
+python-magic-bin = "^0.4.14"
+modelscope = "^1.12.0"
+hdbscan = "^0.8.33"
+pydub = "^0.25.1"
+opencv-python = "^4.9.0.80"
+sk-video = "^1.1.10"
+timm = "^0.9.16"
+ffmpeg-python = "^0.2.0"
+rotary-embedding-torch = "^0.5.3"
+basicsr = {version = "^1.4.2", source = "aliyun"}
+gradio = "^4.19.2"
+gfpgan = "^1.3.8"
+av = "^11.0.0"
+pims = "^0.6.1"
+
+
+[[tool.poetry.source]]
+name = "pytorch-gpu"
+url = "https://download.pytorch.org/whl/cu118"
+priority = "explicit"
+
+[[tool.poetry.source]]
+name = "aliyun"
+url = "https://mirrors.aliyun.com/pypi/simple"
+priority = "primary"
+
+[[tool.poetry.source]]
+name = "mirrors"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple/"
+priority = "default"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

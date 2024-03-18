@@ -1,0 +1,10 @@
+logs/*
+# models/*
+__pycache__
+flagged
+test_assets/*
+weights/*
+models/*
+whisper
+*.pth
+*.onnx
